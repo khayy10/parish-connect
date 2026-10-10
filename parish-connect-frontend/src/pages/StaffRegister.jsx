@@ -1,24 +1,21 @@
-import { useState } from 'react';
 
-import {
-    Link,
-    useNavigate
-} from 'react-router-dom';
+import { useState } from 'react';
 
 import api from '../services/api';
 
-export default function Register() {
-    const navigate = useNavigate();
-
-    const [form, setForm] = useState({
+export default function StaffRegister() {
+    const emptyForm = {
         name: '',
         email: '',
         phone: '',
+        role: '',
         password: '',
         password_confirmation: ''
-    });
+    };
 
+    const [form, setForm] = useState(emptyForm);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
 
     const update = (e) => {
@@ -32,32 +29,24 @@ export default function Register() {
         e.preventDefault();
 
         setError('');
+        setSuccess('');
         setLoading(true);
 
         try {
-            const response = await api.post(
-                '/register',
-                form
+            await api.post('/staff/register', form);
+
+            setSuccess(
+                'Parish staff account created successfully.'
             );
 
-            localStorage.setItem(
-                'token',
-                response.data.token
-            );
-
-            localStorage.setItem(
-                'user',
-                JSON.stringify(response.data.user)
-            );
-
-            navigate('/');
+            setForm(emptyForm);
         } catch (err) {
             setError(
                 Object.values(
                     err.response?.data?.errors || {}
                 ).flat().join(' ') ||
                 err.response?.data?.message ||
-                'Registration failed.'
+                'Staff registration failed.'
             );
         } finally {
             setLoading(false);
@@ -65,21 +54,29 @@ export default function Register() {
     };
 
     return (
-        <div className="auth">
-            <form
-                className="card"
-                onSubmit={register}
-            >
-                <h1>Create Parishioner Account</h1>
+        <div>
+            <header>
+                <h1>Parish Staff Registration</h1>
 
                 <p>
-                    Join the ParishConnect community.
+                    Register authorized parish personnel.
                 </p>
+            </header>
 
+            <form
+                className="panel"
+                onSubmit={register}
+            >
                 {error && (
                     <div className="error">
                         {error}
                     </div>
+                )}
+
+                {success && (
+                    <p role="status">
+                        {success}
+                    </p>
                 )}
 
                 <label>
@@ -87,9 +84,9 @@ export default function Register() {
 
                     <input
                         name="name"
-                        placeholder="Enter full name"
                         value={form.name}
                         onChange={update}
+                        placeholder="Full name"
                         required
                     />
                 </label>
@@ -100,9 +97,9 @@ export default function Register() {
                     <input
                         type="email"
                         name="email"
-                        placeholder="Enter email"
                         value={form.email}
                         onChange={update}
+                        placeholder="Email address"
                         required
                     />
                 </label>
@@ -113,10 +110,37 @@ export default function Register() {
                     <input
                         type="tel"
                         name="phone"
-                        placeholder="Enter phone number"
                         value={form.phone}
                         onChange={update}
+                        placeholder="Phone number"
                     />
+                </label>
+
+                <label>
+                    Parish Role
+
+                    <select
+                        name="role"
+                        value={form.role}
+                        onChange={update}
+                        required
+                    >
+                        <option value="">
+                            Select Parish Role
+                        </option>
+
+                        <option value="priest">
+                            Parish Priest
+                        </option>
+
+                        <option value="secretary">
+                            Parish Secretary
+                        </option>
+
+                        <option value="ministry_coordinator">
+                            Ministry Coordinator
+                        </option>
+                    </select>
                 </label>
 
                 <label>
@@ -125,9 +149,9 @@ export default function Register() {
                     <input
                         type="password"
                         name="password"
-                        placeholder="Create password"
                         value={form.password}
                         onChange={update}
+                        placeholder="Create password"
                         minLength={8}
                         required
                     />
@@ -139,9 +163,9 @@ export default function Register() {
                     <input
                         type="password"
                         name="password_confirmation"
-                        placeholder="Confirm password"
                         value={form.password_confirmation}
                         onChange={update}
+                        placeholder="Confirm password"
                         minLength={8}
                         required
                     />
@@ -151,16 +175,8 @@ export default function Register() {
                     type="submit"
                     disabled={loading}
                 >
-                    {loading ? 'Registering...' : 'Create Account'}
+                    {loading ? 'Creating...' : 'Register Staff'}
                 </button>
-
-                <p>
-                    Already have an account?{' '}
-
-                    <Link to="/login">
-                        Sign In
-                    </Link>
-                </p>
             </form>
         </div>
     );
