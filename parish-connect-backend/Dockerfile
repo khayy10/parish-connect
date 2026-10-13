@@ -45,11 +45,18 @@ RUN mkdir -p \
     storage/framework/views \
     storage/logs
 
-RUN composer dump-autoload \
-    --no-dev \
-    --optimize \
-    --no-interaction \
-    && test -f /var/www/html/vendor/autoload.php
+RUN echo "Checking Composer dependencies..." \
+    && ls -la /var/www/html \
+    && if [ -f /var/www/html/vendor/autoload.php ]; then \
+        echo "VENDOR AUTOLOAD EXISTS"; \
+    else \
+        echo "VENDOR AUTOLOAD MISSING"; \
+    fi \
+    && composer dump-autoload \
+        --no-dev \
+        --optimize \
+        --no-interaction \
+        -vvv
 
 RUN chown -R www-data:www-data \
     storage \
