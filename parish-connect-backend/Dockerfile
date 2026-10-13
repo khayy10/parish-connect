@@ -29,12 +29,17 @@ WORKDIR /var/www/html
 
 COPY composer.json composer.lock ./
 
+ARG COMPOSER_INSTALL_REV=2
+
 RUN composer install \
     --no-dev \
     --no-interaction \
     --no-scripts \
     --prefer-dist \
-    -vvv
+    --optimize-autoloader \
+    -vvv \
+    && ls -la /var/www/html/vendor \
+    && test -f /var/www/html/vendor/autoload.php
 
 COPY . .
 
