@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 
 import {
@@ -19,46 +20,68 @@ export default function Register() {
     });
 
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
 
     const update = (e) => {
-        setForm({
-            ...form,
+        setForm((previous) => ({
+            ...previous,
             [e.target.name]: e.target.value
-        });
+        }));
     };
 
     const register = async (e) => {
         e.preventDefault();
 
         setError('');
+        setSuccess('');
+
+        if (
+            form.password !==
+            form.password_confirmation
+        ) {
+            setError('Passwords do not match.');
+            return;
+        }
+
         setLoading(true);
 
         try {
-            const response = await api.post(
-                '/register',
-                form
+            await api.post('/register', form);
+
+            setSuccess(
+                'Account created successfully. Redirecting to Sign In...'
             );
 
-            localStorage.setItem(
-                'token',
-                response.data.token
-            );
+            setForm({
+                name: '',
+                email: '',
+                phone: '',
+                password: '',
+                password_confirmation: ''
+            });
 
-            localStorage.setItem(
-                'user',
-                JSON.stringify(response.data.user)
-            );
+            navigate('/login', {
+                replace: true,
+                state: {
+                    message:
+                        'Registration successful! Please sign in.'
+                }
+            });
 
-            navigate('/');
         } catch (err) {
+            const validationErrors =
+                err.response?.data?.errors;
+
             setError(
-                Object.values(
-                    err.response?.data?.errors || {}
-                ).flat().join(' ') ||
-                err.response?.data?.message ||
-                'Registration failed.'
+                validationErrors
+                    ? Object.values(validationErrors)
+                        .flat()
+                        .join(' ')
+                    : err.response?.data?.message ||
+                        'Registration failed. Please try again.'
             );
+
         } finally {
             setLoading(false);
         }
@@ -70,24 +93,36 @@ export default function Register() {
                 className="card"
                 onSubmit={register}
             >
-                <h1>Create Parishioner Account</h1>
+                <h1>
+                    Parishioner Sign Up
+                </h1>
 
                 <p>
-                    Join the ParishConnect community.
+                    Create your ParishConnect account.
                 </p>
 
                 {error && (
-                    <div className="error">
+                    <div
+                        className="error"
+                        role="alert"
+                    >
                         {error}
                     </div>
+                )}
+
+                {success && (
+                    <p role="status">
+                        {success}
+                    </p>
                 )}
 
                 <label>
                     Full Name
 
                     <input
+                        type="text"
                         name="name"
-                        placeholder="Enter full name"
+                        placeholder="Enter your full name"
                         value={form.name}
                         onChange={update}
                         required
@@ -100,9 +135,10 @@ export default function Register() {
                     <input
                         type="email"
                         name="email"
-                        placeholder="Enter email"
+                        placeholder="Enter your email"
                         value={form.email}
                         onChange={update}
+                        autoComplete="email"
                         required
                     />
                 </label>
@@ -128,6 +164,7 @@ export default function Register() {
                         placeholder="Create password"
                         value={form.password}
                         onChange={update}
+                        autoComplete="new-password"
                         minLength={8}
                         required
                     />
@@ -142,6 +179,7 @@ export default function Register() {
                         placeholder="Confirm password"
                         value={form.password_confirmation}
                         onChange={update}
+                        autoComplete="new-password"
                         minLength={8}
                         required
                     />
@@ -151,7 +189,9 @@ export default function Register() {
                     type="submit"
                     disabled={loading}
                 >
-                    {loading ? 'Registering...' : 'Create Account'}
+                    {loading
+                        ? 'Creating Account...'
+                        : 'Sign Up'}
                 </button>
 
                 <p>
