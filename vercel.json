@@ -1,0 +1,28 @@
+
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "parish-connect-backend": {
+      "root": "parish-connect-backend",
+      "runtime": "container"
+    },
+    "parish-connect-frontend": {
+      "root": "parish-connect-frontend",
+      "framework": "vite"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "parish-connect-backend"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "parish-connect-frontend"
+      }
+    }
+  ]
+}
