@@ -31,13 +31,22 @@ COPY composer.json composer.lock ./
 
 RUN php /usr/local/bin/composer --version
 
-RUN php /usr/local/bin/composer install \
-    --no-dev \
-    --no-interaction \
-    --no-scripts \
-    --prefer-dist \
-    --optimize-autoloader \
-    --verbose \
+
+RUN echo "=== COMPOSER DIAGNOSTICS ===" \
+    && php -v \
+    && php /usr/local/bin/composer --version \
+    && php /usr/local/bin/composer config vendor-dir --absolute \
+    && echo "=== INSTALLING DEPENDENCIES ===" \
+    && php /usr/local/bin/composer install \
+        --no-dev \
+        --no-interaction \
+        --no-scripts \
+        --prefer-dist \
+        --optimize-autoloader \
+        -vvv \
+    && echo "=== CHECKING VENDOR ===" \
+    && ls -la /var/www/html \
+    && ls -la /var/www/html/vendor \
     && test -f /var/www/html/vendor/autoload.php
 
 COPY . .
