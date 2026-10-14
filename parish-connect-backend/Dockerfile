@@ -23,22 +23,21 @@ RUN a2enmod rewrite
 
 COPY --from=composer:2 \
     /usr/bin/composer \
-    /usr/bin/composer
+    /usr/local/bin/composer
 
 WORKDIR /var/www/html
 
 COPY composer.json composer.lock ./
 
-ARG COMPOSER_INSTALL_REV=2
+RUN php /usr/local/bin/composer --version
 
-RUN composer install \
+RUN php /usr/local/bin/composer install \
     --no-dev \
     --no-interaction \
     --no-scripts \
     --prefer-dist \
     --optimize-autoloader \
-    -vvv \
-    && ls -la /var/www/html/vendor \
+    --verbose \
     && test -f /var/www/html/vendor/autoload.php
 
 COPY . .
@@ -50,18 +49,12 @@ RUN mkdir -p \
     storage/framework/views \
     storage/logs
 
-RUN echo "Checking Composer dependencies..." \
-    && ls -la /var/www/html \
-    && if [ -f /var/www/html/vendor/autoload.php ]; then \
-        echo "VENDOR AUTOLOAD EXISTS"; \
-    else \
-        echo "VENDOR AUTOLOAD MISSING"; \
-    fi \
-    && composer dump-autoload \
-        --no-dev \
-        --optimize \
-        --no-interaction \
-        -vvv
+RUN php /usr/local/bin/composer dump-autoload \
+    --no-dev \
+    --optimize \
+    --no-interaction \
+    --no-scripts \
+    && test -f /var/www/html/vendor/autoload.php
 
 RUN chown -R www-data:www-data \
     storage \
