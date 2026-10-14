@@ -21,9 +21,10 @@ RUN apt-get update && \
 
 RUN a2enmod rewrite
 
-COPY --from=composer:2 \
-    /usr/bin/composer \
-    /usr/local/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+
+RUN test -s /usr/local/bin/composer \
+    && php /usr/local/bin/composer --version
 
 WORKDIR /var/www/html
 
