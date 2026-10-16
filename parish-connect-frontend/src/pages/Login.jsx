@@ -1,87 +1,44 @@
 
 import { useState } from 'react';
-
-import {
-    Link,
-    useNavigate
-} from 'react-router-dom';
-
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../services/api';
 
-export default function Register() {
+export default function Login() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [form, setForm] = useState({
-        name: '',
         email: '',
-        phone: '',
-        password: '',
-        password_confirmation: ''
+        password: ''
     });
 
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const update = (e) => {
-        setForm((previous) => ({
-            ...previous,
-            [e.target.name]: e.target.value
-        }));
-    };
-
-    const register = async (e) => {
+    const login = async (e) => {
         e.preventDefault();
-
         setError('');
-        setSuccess('');
-
-        if (
-            form.password !==
-            form.password_confirmation
-        ) {
-            setError('Passwords do not match.');
-            return;
-        }
-
         setLoading(true);
 
         try {
-            await api.post('/register', form);
+            const response = await api.post('/login', form);
 
-            setSuccess(
-                'Account created successfully. Redirecting to Sign In...'
-            );
+            const { token, user } = response.data;
 
-            setForm({
-                name: '',
-                email: '',
-                phone: '',
-                password: '',
-                password_confirmation: ''
-            });
+            if (!token || !user) {
+                throw new Error('Invalid login response.');
+            }
 
-            navigate('/login', {
-                replace: true,
-                state: {
-                    message:
-                        'Registration successful! Please sign in.'
-                }
-            });
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
 
+            navigate('/', { replace: true });
         } catch (err) {
-            const validationErrors =
-                err.response?.data?.errors;
-
             setError(
-                validationErrors
-                    ? Object.values(validationErrors)
-                        .flat()
-                        .join(' ')
-                    : err.response?.data?.message ||
-                        'Registration failed. Please try again.'
+                err.response?.data?.message ||
+                err.message ||
+                'Sign in failed. Please try again.'
             );
-
         } finally {
             setLoading(false);
         }
@@ -89,117 +46,55 @@ export default function Register() {
 
     return (
         <div className="auth">
-            <form
-                className="card"
-                onSubmit={register}
-            >
-                <h1>
-                    Parishioner Sign Up
-                </h1>
+            <form className="card" onSubmit={login}>
+                <h1>ParishConnect Sign In</h1>
 
-                <p>
-                    Create your ParishConnect account.
-                </p>
+                {location.state?.message && (
+                    <p role="status">{location.state.message}</p>
+                )}
 
                 {error && (
-                    <div
-                        className="error"
-                        role="alert"
-                    >
+                    <div className="error" role="alert">
                         {error}
                     </div>
                 )}
 
-                {success && (
-                    <p role="status">
-                        {success}
-                    </p>
-                )}
-
-                <label>
-                    Full Name
-
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Enter your full name"
-                        value={form.name}
-                        onChange={update}
-                        required
-                    />
-                </label>
-
                 <label>
                     Email Address
-
                     <input
                         type="email"
-                        name="email"
-                        placeholder="Enter your email"
                         value={form.email}
-                        onChange={update}
-                        autoComplete="email"
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                email: e.target.value
+                            })
+                        }
                         required
-                    />
-                </label>
-
-                <label>
-                    Phone Number
-
-                    <input
-                        type="tel"
-                        name="phone"
-                        placeholder="Enter phone number"
-                        value={form.phone}
-                        onChange={update}
                     />
                 </label>
 
                 <label>
                     Password
-
                     <input
                         type="password"
-                        name="password"
-                        placeholder="Create password"
                         value={form.password}
-                        onChange={update}
-                        autoComplete="new-password"
-                        minLength={8}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                password: e.target.value
+                            })
+                        }
                         required
                     />
                 </label>
 
-                <label>
-                    Confirm Password
-
-                    <input
-                        type="password"
-                        name="password_confirmation"
-                        placeholder="Confirm password"
-                        value={form.password_confirmation}
-                        onChange={update}
-                        autoComplete="new-password"
-                        minLength={8}
-                        required
-                    />
-                </label>
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                >
-                    {loading
-                        ? 'Creating Account...'
-                        : 'Sign Up'}
+                <button type="submit" disabled={loading}>
+                    {loading ? 'Signing In...' : 'Sign In'}
                 </button>
 
                 <p>
-                    Already have an account?{' '}
-
-                    <Link to="/login">
-                        Sign In
-                    </Link>
+                    No account? <Link to="/register">Sign Up</Link>
                 </p>
             </form>
         </div>
