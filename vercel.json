@@ -1,6 +1,4 @@
-
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
   "services": {
     "parish-connect-backend": {
       "root": "parish-connect-backend",

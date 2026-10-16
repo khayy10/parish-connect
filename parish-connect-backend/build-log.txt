@@ -1,0 +1,74 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile:
+#1 transferring dockerfile: 2.11kB 0.0s done
+#1 DONE 0.4s
+
+#2 [internal] load metadata for docker.io/library/composer:2
+#2 DONE 1.8s
+
+#3 [internal] load metadata for docker.io/library/php:8.3-apache
+#3 DONE 1.9s
+
+#4 [internal] load .dockerignore
+#4 transferring context:
+#4 transferring context: 218B 0.0s done
+#4 DONE 0.4s
+
+#5 [internal] load build context
+#5 DONE 0.0s
+
+#6 [stage-0  1/18] FROM docker.io/library/php:8.3-apache@sha256:f8506a19d79cad7fcf0c8049f1ed2208824961018fdc10bd80f324094dcd36bd
+#6 resolve docker.io/library/php:8.3-apache@sha256:f8506a19d79cad7fcf0c8049f1ed2208824961018fdc10bd80f324094dcd36bd
+#6 ...
+
+#7 FROM docker.io/library/composer:2@sha256:af98f42dfff7c68ba8d53c2164fd9fde1087b7d449514baa38c418b1f6bc4bac
+#7 resolve docker.io/library/composer:2@sha256:af98f42dfff7c68ba8d53c2164fd9fde1087b7d449514baa38c418b1f6bc4bac 1.0s done
+#7 DONE 1.1s
+
+#6 [stage-0  1/18] FROM docker.io/library/php:8.3-apache@sha256:f8506a19d79cad7fcf0c8049f1ed2208824961018fdc10bd80f324094dcd36bd
+#6 resolve docker.io/library/php:8.3-apache@sha256:f8506a19d79cad7fcf0c8049f1ed2208824961018fdc10bd80f324094dcd36bd 1.0s done
+#6 DONE 1.2s
+
+#5 [internal] load build context
+#5 transferring context: 3.61kB 0.0s done
+#5 DONE 0.4s
+
+#8 [stage-0  6/18] COPY composer.json composer.lock ./
+#8 CACHED
+
+#9 [stage-0  2/18] RUN apt-get update &&     apt-get install -y         -o Dpkg::Options::="--force-confdef"         -o Dpkg::Options::="--force-confold"         git         unzip         libzip-dev         libonig-dev         libxml2-dev     && docker-php-ext-install         pdo_mysql         mbstring         bcmath         zip     && rm -rf /var/lib/apt/lists/*
+#9 CACHED
+
+#10 [stage-0  3/18] RUN a2enmod rewrite
+#10 CACHED
+
+#11 [stage-0  4/18] COPY --from=composer:2     /usr/bin/composer     /usr/local/bin/composer
+#11 CACHED
+
+#12 [stage-0  5/18] WORKDIR /var/www/html
+#12 CACHED
+
+#13 [stage-0  7/18] RUN php /usr/local/bin/composer --version
+#13 CACHED
+
+#14 [stage-0  8/18] RUN php /usr/local/bin/composer install     --no-dev     --no-interaction     --no-scripts     --prefer-dist     --optimize-autoloader     --verbose     && test -f /var/www/html/vendor/autoload.php
+#14 ERROR: process "/bin/sh -c php /usr/local/bin/composer install     --no-dev     --no-interaction     --no-scripts     --prefer-dist     --optimize-autoloader     --verbose     && test -f /var/www/html/vendor/autoload.php" did not complete successfully: exit code: 1
+------
+ > [stage-0  8/18] RUN php /usr/local/bin/composer install     --no-dev     --no-interaction     --no-scripts     --prefer-dist     --optimize-autoloader     --verbose     && test -f /var/www/html/vendor/autoload.php:
+------
+Dockerfile:34
+--------------------
+  33 |     
+  34 | >>> RUN php /usr/local/bin/composer install \
+  35 | >>>     --no-dev \
+  36 | >>>     --no-interaction \
+  37 | >>>     --no-scripts \
+  38 | >>>     --prefer-dist \
+  39 | >>>     --optimize-autoloader \
+  40 | >>>     --verbose \
+  41 | >>>     && test -f /var/www/html/vendor/autoload.php
+  42 |     
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c php /usr/local/bin/composer install     --no-dev     --no-interaction     --no-scripts     --prefer-dist     --optimize-autoloader     --verbose     && test -f /var/www/html/vendor/autoload.php" did not complete successfully: exit code: 1
