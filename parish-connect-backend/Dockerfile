@@ -53,7 +53,6 @@ RUN echo "=== COMPOSER DIAGNOSTICS ===" \
 COPY . .
 
 
-
 RUN mkdir -p \
     bootstrap/cache \
     storage/framework/cache/data \
