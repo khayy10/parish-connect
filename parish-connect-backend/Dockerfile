@@ -52,6 +52,9 @@ RUN echo "=== COMPOSER DIAGNOSTICS ===" \
 
 COPY . .
 
+COPY certs/ca.pem /var/www/html/certs/ca.pem
+
+RUN chmod 644 /var/www/html/certs/ca.pem
 
 RUN mkdir -p \
     bootstrap/cache \
