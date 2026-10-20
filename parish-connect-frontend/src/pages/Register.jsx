@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -16,54 +17,128 @@ export default function Register() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const handleChange = (e) => {
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         setError('');
+
+        if (form.password !== form.password_confirmation) {
+            setError('Passwords do not match.');
+            return;
+        }
+
+        if (form.password.length < 8) {
+            setError(
+                'Password must contain at least 8 characters.'
+            );
+            return;
+        }
+
         setLoading(true);
 
         try {
-            await api.post('/register', form);
+            const response = await api.post('/register', form);
 
-            navigate('/login', {
-                replace: true,
-                state: {
-                    message: 'Registration successful! Please sign in.'
-                }
-            });
+            if (response.status === 201) {
+                navigate('/login', {
+                    replace: true,
+                    state: {
+                        message:
+                            'Registration successful! Please sign in.'
+                    }
+                });
+            } else {
+                setError(
+                    'Unexpected server response. Please try again.'
+                );
+            }
+
         } catch (err) {
             const errors = err.response?.data?.errors;
 
-            setError(
-                errors
-                    ? Object.values(errors).flat().join(' ')
-                    : err.response?.data?.message ||
-                    'Registration failed. Please try again.'
-            );
+            if (errors) {
+                setError(
+                    Object.values(errors).flat().join(' ')
+                );
+            } else if (err.response?.data?.message) {
+                setError(err.response.data.message);
+            } else if (err.code === 'ECONNABORTED') {
+                setError(
+                    'Server timeout. Please try again.'
+                );
+            } else if (!err.response) {
+                setError(
+                    'Cannot connect to the Laravel server. Check API connection.'
+                );
+            } else {
+                setError(
+                    'Registration failed. HTTP ' +
+                    err.response.status
+                );
+            }
+
         } finally {
             setLoading(false);
         }
     };
 
     const fields = [
-        { name: 'name', label: 'Full Name', type: 'text' },
-        { name: 'email', label: 'Email Address', type: 'email' },
-        { name: 'phone', label: 'Phone Number', type: 'tel' },
-        { name: 'password', label: 'Password', type: 'password' },
+        {
+            name: 'name',
+            label: 'Full Name',
+            type: 'text',
+            autoComplete: 'name'
+        },
+        {
+            name: 'email',
+            label: 'Email Address',
+            type: 'email',
+            autoComplete: 'email'
+        },
+        {
+            name: 'phone',
+            label: 'Phone Number',
+            type: 'tel',
+            autoComplete: 'tel'
+        },
+        {
+            name: 'password',
+            label: 'Password',
+            type: 'password',
+            autoComplete: 'new-password'
+        },
         {
             name: 'password_confirmation',
             label: 'Confirm Password',
-            type: 'password'
+            type: 'password',
+            autoComplete: 'new-password'
         }
     ];
 
     return (
         <div className="auth">
-            <form className="card" onSubmit={handleSubmit}>
+            <form
+                className="card"
+                onSubmit={handleSubmit}
+            >
                 <h1>Parishioner Sign Up</h1>
-                <p>Create your ParishConnect account.</p>
+
+                <p>
+                    Create your ParishConnect account.
+                </p>
 
                 {error && (
-                    <div className="error" role="alert">
+                    <div
+                        className="error"
+                        role="alert"
+                    >
                         {error}
                     </div>
                 )}
@@ -71,27 +146,35 @@ export default function Register() {
                 {fields.map((field) => (
                     <label key={field.name}>
                         {field.label}
+
                         <input
                             type={field.type}
+                            name={field.name}
                             value={form[field.name]}
-                            onChange={(e) =>
-                                setForm({
-                                    ...form,
-                                    [field.name]: e.target.value
-                                })
+                            onChange={handleChange}
+                            autoComplete={field.autoComplete}
+                            required={field.name !== 'phone'}
+                            minLength={
+                                field.type === 'password'
+                                    ? 8
+                                    : undefined
                             }
-                            required
                         />
                     </label>
                 ))}
 
-                <button type="submit" disabled={loading}>
+                <button
+                    type="submit"
+                    disabled={loading}
+                >
                     {loading ? 'Registering...' : 'Sign Up'}
                 </button>
 
                 <p>
                     Already have an account?{' '}
-                    <Link to="/login">Sign In</Link>
+                    <Link to="/login">
+                        Sign In
+                    </Link>
                 </p>
             </form>
         </div>

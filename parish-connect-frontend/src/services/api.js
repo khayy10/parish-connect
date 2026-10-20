@@ -1,22 +1,35 @@
 
 import axios from 'axios';
 
+const baseURL = (
+    import.meta.env.VITE_API_URL ||
+    'https://parish-connect-backend.onrender.com/api'
+).replace(/\/+$/, '');
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api',
-
-    timeout: 15000,
-
+    baseURL: baseURL,
+    timeout: 60000,
     headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json'
     }
 });
 
+// ADD TOKEN TO AUTHENTICATED REQUESTS
+
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
 
-        if (token) {
+        const publicRoutes = [
+            '/login',
+            '/register'
+        ];
+
+        if (
+            token &&
+            !publicRoutes.includes(config.url)
+        ) {
             config.headers.Authorization = `Bearer ${token}`;
         }
 
@@ -24,6 +37,8 @@ api.interceptors.request.use(
     },
     (error) => Promise.reject(error)
 );
+
+// HANDLE API ERRORS
 
 api.interceptors.response.use(
     (response) => response,
