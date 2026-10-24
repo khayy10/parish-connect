@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import api, { getApiErrorMessage } from './services/api';
 
 import {
     Routes,
@@ -19,19 +21,40 @@ import Announcements from './pages/Announcements';
 import Parishioners from './pages/Parishioners';
 
 function Protected({ children }) {
+    const [state, setState] = useState('checking');
+    const [error, setError] = useState('');
     const token = localStorage.getItem('token');
 
-    if (!token) {
-        return <Navigate to="/login" replace />;
-    }
+    useEffect(() => {
+        if (!token) {
+            setState('signed-out');
+            return;
+        }
+        let active = true;
+        api.get('/me').then(({ data }) => {
+            if (!active) return;
+            localStorage.setItem('user', JSON.stringify(data));
+            setState('authenticated');
+        }).catch((err) => {
+            if (!active) return;
+            if (err.response?.status === 401) setState('signed-out');
+            else {
+                setError(getApiErrorMessage(err));
+                setState('error');
+            }
+        });
+        return () => { active = false; };
+    }, [token]);
 
+    if (!token || state === 'signed-out') return <Navigate to="/login" replace />;
+    if (state === 'checking') return <div className="auth"><p>Checking your session...</p></div>;
+    if (state === 'error') return <div className="auth"><div className="card"><p role="alert">{error}</p><button onClick={() => window.location.reload()}>Retry connection</button></div></div>;
     return children;
 }
 
 function PriestOnly({ children }) {
-    const user = JSON.parse(
-        localStorage.getItem('user') || '{}'
-    );
+    let user = {};
+    try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { /* invalid old cache */ }
 
     if (user.role !== 'priest') {
         return <Navigate to="/" replace />;

@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import api, { getApiErrorMessage } from '../services/api';
 
 export default function Register() {
     const navigate = useNavigate();
@@ -61,29 +61,7 @@ export default function Register() {
             }
 
         } catch (err) {
-            const errors = err.response?.data?.errors;
-
-            if (errors) {
-                setError(
-                    Object.values(errors).flat().join(' ')
-                );
-            } else if (err.response?.data?.message) {
-                setError(err.response.data.message);
-            } else if (err.code === 'ECONNABORTED') {
-                setError(
-                    'Server timeout. Please try again.'
-                );
-            } else if (!err.response) {
-                setError(
-                    'Cannot connect to the Laravel server. Check API connection.'
-                );
-            } else {
-                setError(
-                    'Registration failed. HTTP ' +
-                    err.response.status
-                );
-            }
-
+            setError(getApiErrorMessage(err, 'Registration failed.'));
         } finally {
             setLoading(false);
         }

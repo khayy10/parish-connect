@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 
-import api from '../services/api';
+import api, { getApiErrorMessage } from '../services/api';
 
 export default function StaffRegister() {
     const emptyForm = {
@@ -41,13 +41,7 @@ export default function StaffRegister() {
 
             setForm(emptyForm);
         } catch (err) {
-            setError(
-                Object.values(
-                    err.response?.data?.errors || {}
-                ).flat().join(' ') ||
-                err.response?.data?.message ||
-                'Staff registration failed.'
-            );
+            setError(getApiErrorMessage(err, 'Staff registration failed.'));
         } finally {
             setLoading(false);
         }

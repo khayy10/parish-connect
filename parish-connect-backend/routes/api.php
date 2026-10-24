@@ -12,16 +12,22 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\UserController;
 
 // PUBLIC ROUTES
+// Use /api/health to check both Laravel and its live database connection.
+Route::get('/health', function () {
+    try {
+        \Illuminate\Support\Facades\DB::connection()->getPdo();
+        return response()->json(['status' => 'ok', 'database' => 'connected']);
+    } catch (\Throwable $exception) {
+        \Illuminate\Support\Facades\Log::error('API database health check failed', [
+            'exception' => get_class($exception),
+        ]);
+        return response()->json(['status' => 'error', 'database' => 'unavailable'], 503);
+    }
+});
 
-Route::post(
-    '/register',
-    [AuthController::class, 'register']
-);
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:10,1');
 
-Route::post(
-    '/login',
-    [AuthController::class, 'login']
-);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
 
 // AUTHENTICATED ROUTES
 
@@ -167,6 +173,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // PARISH PRIEST ONLY
 
     Route::middleware('role:priest')->group(function () {
+
+        Route::post('/staff/register', [AuthController::class, 'registerStaff']);
 
         Route::get(
             '/users',

@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import api from '../services/api';
+import api, { getApiErrorMessage } from '../services/api';
 
 export default function Login() {
     const navigate = useNavigate();
@@ -47,27 +47,7 @@ export default function Login() {
             });
 
         } catch (err) {
-            const errors = err.response?.data?.errors;
-
-            if (errors) {
-                setError(
-                    Object.values(errors).flat().join(' ')
-                );
-            } else if (err.response?.data?.message) {
-                setError(err.response.data.message);
-            } else if (err.code === 'ECONNABORTED') {
-                setError(
-                    'Server timeout. Please try again.'
-                );
-            } else if (!err.response && !err.message?.includes('Invalid login response')) {
-                setError(
-                    'Cannot connect to the server. Please try again.'
-                );
-            } else {
-                setError(
-                    err.message || 'Sign in failed.'
-                );
-            }
+            setError(getApiErrorMessage(err, 'Sign in failed.'));
         } finally {
             setLoading(false);
         }

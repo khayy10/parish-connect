@@ -1,27 +1,15 @@
-
 {
-  "services": {
-    "parish-connect-backend": {
-      "root": "parish-connect-backend",
-      "runtime": "container"
-    },
-    "parish-connect-frontend": {
-      "root": "parish-connect-frontend",
-      "framework": "vite"
-    }
-  },
+  "buildCommand": "cd parish-connect-frontend && npm run build",
+  "outputDirectory": "parish-connect-frontend/dist",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": {
-        "service": "parish-connect-backend"
-      }
+      "source": "/api/:path*",
+      "destination": "https://parish-connect-backend.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
-      "destination": {
-        "service": "parish-connect-frontend"
-      }
+      "destination": "/index.html"
     }
-  ]
+  ],
+  "installCommand": "cd parish-connect-frontend && npm ci"
 }
