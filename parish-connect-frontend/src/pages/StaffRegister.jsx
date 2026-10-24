@@ -2,6 +2,7 @@
 import { useState } from 'react';
 
 import api, { getApiErrorMessage } from '../services/api';
+import PasswordInput from '../components/PasswordInput';
 
 export default function StaffRegister() {
     const emptyForm = {
@@ -137,33 +138,31 @@ export default function StaffRegister() {
                     </select>
                 </label>
 
-                <label>
-                    Password
+                <label className="staff-password-label" htmlFor="staff-password">Password</label>
+                <PasswordInput
+                    id="staff-password"
+                    name="password"
+                    value={form.password}
+                    onChange={update}
+                    label="password"
+                    placeholder="Create password"
+                    autoComplete="new-password"
+                    minLength={8}
+                    required
+                />
 
-                    <input
-                        type="password"
-                        name="password"
-                        value={form.password}
-                        onChange={update}
-                        placeholder="Create password"
-                        minLength={8}
-                        required
-                    />
-                </label>
-
-                <label>
-                    Confirm Password
-
-                    <input
-                        type="password"
-                        name="password_confirmation"
-                        value={form.password_confirmation}
-                        onChange={update}
-                        placeholder="Confirm password"
-                        minLength={8}
-                        required
-                    />
-                </label>
+                <label className="staff-password-label" htmlFor="staff-confirm-password">Confirm Password</label>
+                <PasswordInput
+                    id="staff-confirm-password"
+                    name="password_confirmation"
+                    value={form.password_confirmation}
+                    onChange={update}
+                    label="confirm password"
+                    placeholder="Confirm password"
+                    autoComplete="new-password"
+                    minLength={8}
+                    required
+                />
 
                 <button
                     type="submit"

@@ -564,3 +564,58 @@ td { font-size: 13px; overflow-wrap: anywhere; }
   .document-review { grid-template-columns: minmax(0, 1fr); }
   .document-review button { grid-column: auto; }
 }
+
+
+/* ACCESSIBLE PASSWORD VISIBILITY CONTROL -------------------------------- */
+.password-field {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+.password-field > input,
+.auth .card .password-field > input {
+  width: 100%;
+  padding-right: 58px;
+}
+.password-field > .password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  color: #476b56;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  box-shadow: none;
+  cursor: pointer;
+  z-index: 1;
+}
+.password-field > .password-toggle:hover:not(:disabled) {
+  color: #184d37;
+  background: #edf5ef;
+  transform: translateY(-50%);
+  box-shadow: none;
+  filter: none;
+}
+.password-field > .password-toggle:active:not(:disabled) {
+  transform: translateY(-50%);
+}
+.password-field > .password-toggle:focus-visible {
+  outline: 3px solid rgba(199,157,83,.75);
+  outline-offset: 0;
+}
+.panel .staff-password-label {
+  display: block;
+  margin: 0 0 7px;
+}
+.panel .password-field {
+  margin-bottom: 14px;
+}

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import api, { getApiErrorMessage } from '../services/api';
 import ApiStatus from '../components/ApiStatus';
+import PasswordInput from '../components/PasswordInput';
 import { ROLE_OPTIONS } from '../constants/roles';
 
 export default function Login() {
@@ -57,8 +58,8 @@ export default function Login() {
             <input id="login-email" type="email" name="email" value={form.email} onChange={handleChange}
                 placeholder="Enter your email" autoComplete="email" required />
             <label htmlFor="login-password">Password</label>
-            <input id="login-password" type="password" name="password" value={form.password} onChange={handleChange}
-                autoComplete="current-password" required />
+            <PasswordInput id="login-password" name="password" value={form.password} onChange={handleChange}
+                autoComplete="current-password" label="password" required />
             <button type="submit" className="auth-submit" disabled={loading}>{loading ? 'Signing In...' : 'Sign In'}</button>
             <p className="auth-foot">No account? <Link to="/register">Sign Up</Link></p>
         </form>

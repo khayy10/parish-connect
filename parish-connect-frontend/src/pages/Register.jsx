@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api, { getApiErrorMessage } from '../services/api';
 import ApiStatus from '../components/ApiStatus';
+import PasswordInput from '../components/PasswordInput';
 import { ROLE_OPTIONS } from '../constants/roles';
 
 const EMPTY_FORM = {
@@ -86,11 +87,11 @@ export default function Register() {
                 <input id="register-phone" type="tel" name="phone" value={form.phone} onChange={handleChange}
                     maxLength={30} autoComplete="tel" />
                 <label htmlFor="register-password">Password</label>
-                <input id="register-password" type="password" name="password" value={form.password} onChange={handleChange}
-                    autoComplete="new-password" minLength={8} required />
+                <PasswordInput id="register-password" name="password" value={form.password} onChange={handleChange}
+                    autoComplete="new-password" label="password" minLength={8} required />
                 <label htmlFor="register-confirm">Confirm Password</label>
-                <input id="register-confirm" type="password" name="password_confirmation" value={form.password_confirmation}
-                    onChange={handleChange} autoComplete="new-password" minLength={8} required />
+                <PasswordInput id="register-confirm" name="password_confirmation" value={form.password_confirmation}
+                    onChange={handleChange} autoComplete="new-password" label="confirm password" minLength={8} required />
                 <button className="auth-submit" type="submit" disabled={loading}>
                     {loading ? 'Registering...' : 'Create Parishioner Account'}
                 </button>
