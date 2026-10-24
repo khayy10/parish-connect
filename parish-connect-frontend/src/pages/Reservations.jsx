@@ -1,80 +1,65 @@
-import {
-    useEffect, useState
-}
-from 'react';
-import api from '../services/api';
+import { useEffect, useState } from 'react';
+import api, { getApiErrorMessage } from '../services/api';
+
 export default function Reservations() {
-    const [x, setX] = useState([]), [f, setF] = useState({
-        facility: 'Parish Hall', event_name: '', reservation_date: '', start_time: '08:00', end_time: '10:00', purpose: ''
-    }), [msg, setMsg] = useState('');
-    const load = () => api.get('/reservations').then(r => setX(r.data));
-    useEffect(load, []);
-    const add = async (e) => {
-        e.preventDefault();
+    const [reservations, setReservations] = useState([]);
+    const [form, setForm] = useState({ facility: 'Parish Hall', event_name: '', reservation_date: '', start_time: '08:00', end_time: '10:00', purpose: '' });
+    const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
+    const [saving, setSaving] = useState(false);
+
+    const load = async (isActive = () => true) => {
         try {
-            await api.post('/reservations', f);
-            setMsg('Reservation submitted.');
-            load();
-        }
-        catch (x) {
-            setMsg(x.response?.data?.message || 'Unable to submit');
+            const { data } = await api.get('/reservations');
+            if (!isActive()) return;
+            if (!Array.isArray(data)) throw new Error('Unexpected reservations response from the server.');
+            setReservations(data);
+            setError('');
+        } catch (err) {
+            if (isActive()) setError(err.message?.startsWith('Unexpected') ? err.message : getApiErrorMessage(err));
         }
     };
-    return <>
-    <header>
-    <h1>Facility Reservations</h1>
-    </header>
-    {
-        msg && <p>
-        {
-            msg
+
+    useEffect(() => {
+        let active = true;
+        void load(() => active);
+        return () => { active = false; };
+    }, []);
+
+    const add = async (event) => {
+        event.preventDefault();
+        setError('');
+        setMessage('');
+        setSaving(true);
+        try {
+            await api.post('/reservations', form);
+            setMessage('Reservation submitted.');
+            setForm(previous => ({ ...previous, event_name: '', purpose: '' }));
+            await load();
+        } catch (err) {
+            setError(getApiErrorMessage(err));
+        } finally {
+            setSaving(false);
         }
-        </p>
-    }
-    <form className='panel formrow' onSubmit={add}>
-    <input value={f.facility} onChange={e => setF({
-        ...f, facility: e.target.value
-    })
-}
-/><input placeholder='Event name' value={f.event_name} onChange={e => setF({
-    ...f, event_name: e.target.value
-})
-}
-required/><input type='date' value={f.reservation_date} onChange={e => setF({
-    ...f, reservation_date: e.target.value
-})
-}
-required/><input type='time' value={f.start_time} onChange={e => setF({
-    ...f, start_time: e.target.value
-})
-}
-/><input type='time' value={f.end_time} onChange={e => setF({
-    ...f, end_time: e.target.value
-})
-}
-/><button>Request</button>
-</form>
-<div className='panel'>
-{
-    x.map(r => <div className='row' key={r.id}>
-    <b>
-    {
-        r.event_name
-    }
-    </b>
-    <span>
-    {
-        r.facility
-    }
-    · {
-        r.reservation_date
-    }
-    · {
-        r.status
-    }
-    </span>
-    </div>)
-}
-</div>
-</>;
+    };
+
+    return <>
+        <header><h1>Facility Reservations</h1></header>
+        {error && <p className="error" role="alert">{error}</p>}
+        {message && <p className="success" role="status">{message}</p>}
+        <form className="panel formrow" onSubmit={add}>
+            <input aria-label="Facility" value={form.facility} onChange={e => setForm({ ...form, facility: e.target.value })} required />
+            <input aria-label="Event name" placeholder="Event name" value={form.event_name} onChange={e => setForm({ ...form, event_name: e.target.value })} required />
+            <input aria-label="Reservation date" type="date" value={form.reservation_date} onChange={e => setForm({ ...form, reservation_date: e.target.value })} required />
+            <input aria-label="Start time" type="time" value={form.start_time} onChange={e => setForm({ ...form, start_time: e.target.value })} required />
+            <input aria-label="End time" type="time" value={form.end_time} onChange={e => setForm({ ...form, end_time: e.target.value })} required />
+            <button type="submit" disabled={saving}>{saving ? 'Submitting...' : 'Request'}</button>
+        </form>
+        <div className="panel">
+            {reservations.map(item => <div className="row" key={item.id}>
+                <b>{item.event_name}</b>
+                <span>{item.facility} · {item.reservation_date} · {item.status}</span>
+            </div>)}
+        </div>
+    </>;
 }

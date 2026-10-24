@@ -1,64 +1,61 @@
-import {
-    useEffect, useState
-}
-from 'react';
-import api from '../services/api';
+import { useEffect, useState } from 'react';
+import api, { getApiErrorMessage } from '../services/api';
+
 export default function Announcements() {
-    const [x, setX] = useState([]), u = JSON.parse(localStorage.getItem('user') || '{}'), [f, setF] = useState({
-        title: '', content: '', event_date: '', is_published: true
-    });
-    const load = () => api.get('/announcements').then(r => setX(r.data));
-    useEffect(load, []);
-    const add = async (e) => {
-        e.preventDefault();
-        await api.post('/announcements', f);
-        setF({
-            title: '', content: '', event_date: '', is_published: true
-        });
-        load();
-    };
-    return <>
-    <header>
-    <h1>Announcements</h1>
-    </header>
-    {
-        u.role !== 'parishioner' && <form className='panel' onSubmit={add}>
-        <input placeholder='Title' value={f.title} onChange={e => setF({
-            ...f, title: e.target.value
-        })
-    }
-    /><textarea placeholder='Announcement' value={f.content} onChange={e => setF({
-        ...f, content: e.target.value
-    })
-}
-/><input type='date' value={f.event_date} onChange={e => setF({
-    ...f, event_date: e.target.value
-})
-}
-/><button>Publish</button>
-</form>
-}
-<div className='grid'>
-{
-    x.map(a => <article className='panel' key={a.id}>
-    <h3>
-    {
-        a.title
-    }
-    </h3>
-    <p>
-    {
-        a.content
-    }
-    </p>
-    {
-        a.event_date && <small>Event: {
-            a.event_date
+    const [announcements, setAnnouncements] = useState([]);
+    const [form, setForm] = useState({ title: '', content: '', event_date: '', is_published: true });
+    const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
+    let user = {};
+    try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { /* ignore malformed cache */ }
+
+    const load = async (isActive = () => true) => {
+        try {
+            const { data } = await api.get('/announcements');
+            if (!isActive()) return;
+            if (!Array.isArray(data)) throw new Error('Unexpected announcements response from the server.');
+            setAnnouncements(data);
+            setError('');
+        } catch (err) {
+            if (isActive()) setError(err.message?.startsWith('Unexpected') ? err.message : getApiErrorMessage(err));
         }
-        </small>
-    }
-    </article>)
-}
-</div>
-</>;
+    };
+
+    useEffect(() => {
+        let active = true;
+        void load(() => active);
+        return () => { active = false; };
+    }, []);
+
+    const add = async event => {
+        event.preventDefault();
+        setError('');
+        setMessage('');
+        try {
+            await api.post('/announcements', form);
+            setForm({ title: '', content: '', event_date: '', is_published: true });
+            setMessage('Announcement published.');
+            await load();
+        } catch (err) {
+            setError(getApiErrorMessage(err));
+        }
+    };
+
+    return <>
+        <header><h1>Announcements</h1></header>
+        {error && <p className="error" role="alert">{error}</p>}
+        {message && <p className="success" role="status">{message}</p>}
+        {user.role !== 'parishioner' && <form className="panel" onSubmit={add}>
+            <input aria-label="Announcement title" placeholder="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
+            <textarea aria-label="Announcement content" placeholder="Announcement" value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} required />
+            <input aria-label="Event date" type="date" value={form.event_date} onChange={e => setForm({ ...form, event_date: e.target.value })} />
+            <button type="submit">Publish</button>
+        </form>}
+        <div className="grid">
+            {announcements.map(item => <article className="panel" key={item.id}>
+                <h3>{item.title}</h3><p>{item.content}</p>
+                {item.event_date && <small>Event: {item.event_date}</small>}
+            </article>)}
+        </div>
+    </>;
 }
