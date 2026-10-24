@@ -98,6 +98,9 @@ RUN sed -i \
 RUN echo "ServerName localhost" \
     >> /etc/apache2/apache2.conf
 
+# Fail the Docker build early if Laravel's Apache rewrite entry point is missing.
+RUN test -f /var/www/html/public/.htaccess && apache2ctl -t
+
 EXPOSE 10000
 
 CMD ["sh", "-c", "if [ \"$MIGRATE_ON_START\" = \"true\" ]; then php artisan migrate --force || exit 1; fi; if [ \"$BOOTSTRAP_PRIEST_ON_START\" = \"true\" ]; then php artisan db:seed --class=StaffSeeder --force || exit 1; fi; exec apache2-foreground"]
