@@ -1,51 +1,34 @@
-# ParishConnect — Runnable Laravel + React Project
+# ParishConnect — React + Laravel (Roles, Login and Registration Fix)
 
-This project implements the current ParishConnect scope: user/role management, parishioner information, appointments, facility reservations, ministries, and announcements. Backend and frontend are separate.
+Frontend: `parish-connect-frontend` (Vite/React, Vercel). Backend: `parish-connect-backend` (Laravel 12, Render). Database: MySQL-compatible database (such as TiDB Cloud).
 
-## Requirements
-- PHP 8.2+
-- Composer 2
-- MySQL/MariaDB
-- Node.js 20+ and npm
+## Roles and registration
+- All users sign in by selecting the **same role saved in the database**: Parishioner, Parish Priest, Parish Secretary, or Ministry Coordinator.
+- Public registration is for **Parishioner** only. An untrusted visitor cannot create a priest/staff account by changing the form payload.
+- Staff accounts are created through **Register Parish Staff** while signed in as a Parish Priest.
+- The first priest is provisioned via private Render environment values (`StaffSeeder`). See `DEPLOYMENT_FIX_GUIDE.md`. No public default passwords or demo accounts are generated.
 
-## 1. Database
-Create a MySQL database named `parish_connect`. In XAMPP/phpMyAdmin you can create it from the Databases tab.
-
-## 2. Backend
-```bash
-cd parish-connect-backend
-copy .env.example .env       # Windows CMD
-# cp .env.example .env       # macOS/Linux
+## Local development (Windows CMD)
+Backend (Terminal 1):
+```
+cd /d C:\xampp\htdocs\PARISH-CONNECT\parish-connect-backend
+copy .env.example .env
 composer install
 php artisan key:generate
-php artisan migrate --seed
+php artisan migrate
 php artisan serve
 ```
-Backend: http://127.0.0.1:8000
+Set valid DB_* variables in the backend `.env` **before** migrating. Do not run `migrate:fresh` on any database with data.
 
-If MySQL has a password, edit DB_USERNAME and DB_PASSWORD in `.env` before migrating.
-
-## 3. Frontend
-Open a second terminal:
-```bash
-cd parish-connect-frontend
-copy .env.example .env       # Windows CMD
-# cp .env.example .env
-npm install
+Frontend (Terminal 2):
+```
+cd /d C:\xampp\htdocs\PARISH-CONNECT\parish-connect-frontend
+npm ci
 npm run dev
 ```
-Frontend: http://localhost:5173
+Open http://localhost:5173. Vite routes `/api` to Laravel at 127.0.0.1:8000.
 
-## Demo accounts
-Password for all seeded accounts: `password123`
-- priest@parishconnect.test
-- secretary@parishconnect.test
-- coordinator@parishconnect.test
-- parishioner@parishconnect.test
+## Production
+See **`DEPLOYMENT_FIX_GUIDE.md`** for the Vercel/Render root directory, environment variables, DB connections, first-priest setup, debugging persistent 404s, and Git commands.
 
-## Production build
-Frontend: `npm run build`; deploy the generated `dist/` directory to your static web host.
-Backend: configure production `.env`, run `composer install --no-dev --optimize-autoloader`, `php artisan migrate --force`, and point the web server document root to `parish-connect-backend/public`. Run `php artisan config:cache` and `php artisan route:cache`.
-
-## Important
-Do not use the demo passwords in production. Set APP_DEBUG=false, use HTTPS, and create strong production credentials.
+**Never commit:** `.env`, database passwords, APP_KEY, or personally identifying test data. This package intentionally excludes the `.git` folder, `vendor`, `node_modules`, logs, and local `.env` values.

@@ -256,3 +256,25 @@ td {
         display: block;
     }
 }
+
+/* Accessible, mobile-friendly role-aware login and signup */
+.auth { padding: 26px 12px; }
+.auth .card { width: min(480px, 100%); box-shadow: 0 15px 38px rgba(0,0,0,.17); }
+.auth .card h1 { margin: 0 0 8px; font-size: clamp(1.5rem, 4vw, 2rem); }
+.auth-intro { color: #586a60; margin: 0 0 15px; }
+.auth .card label { display: block; margin: 15px 0 6px; font-weight: 600; }
+.auth .card input:focus, .auth .card select:focus { outline: 2px solid #37795b; outline-offset: 1px; }
+.auth-submit { width: 100%; margin-top: 20px; font-weight: 600; }
+.auth-foot { text-align: center; margin: 18px 0 0; }
+.auth-foot a, .notice a { color: #1e6546; font-weight: 600; }
+.auth .error, .auth .success, .auth .notice { margin: 12px 0; padding: 12px; border-radius: 9px; }
+.auth .success { background: #def4e6; color: #11572f; }
+.auth .notice { background: #fff3d8; color: #654b0d; line-height: 1.45; }
+.auth .notice p { margin: 8px 0 0; }
+.api-status { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: .86rem; padding: 9px 11px; border-radius: 8px; margin: 12px 0 16px; }
+.api-status--checking { background: #eef2f5; color: #4c5a63; }
+.api-status--ok { background: #e6f5ea; color: #155e31; }
+.api-status--error { background: #fce5e5; color: #872222; }
+.link-button { color: inherit; font-weight: bold; padding: 0; text-decoration: underline; background: none; }
+button:disabled { opacity: .65; cursor: not-allowed; }
+@media (max-width: 440px) { .auth .card { padding: 22px; } }

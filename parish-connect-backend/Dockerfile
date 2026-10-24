@@ -100,4 +100,4 @@ RUN echo "ServerName localhost" \
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "if [ \"$MIGRATE_ON_START\" = \"true\" ]; then php artisan migrate --force || exit 1; fi; exec apache2-foreground"]
+CMD ["sh", "-c", "if [ \"$MIGRATE_ON_START\" = \"true\" ]; then php artisan migrate --force || exit 1; fi; if [ \"$BOOTSTRAP_PRIEST_ON_START\" = \"true\" ]; then php artisan db:seed --class=StaffSeeder --force || exit 1; fi; exec apache2-foreground"]

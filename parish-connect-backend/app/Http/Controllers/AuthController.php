@@ -19,6 +19,8 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'phone' => ['nullable', 'string', 'max:30'],
+            // Public signup can create parishioners only, even with a forged request.
+            'role' => ['sometimes', Rule::in(['parishioner'])],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
@@ -54,12 +56,19 @@ class AuthController extends Controller
         $data = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
+            'role' => ['sometimes', Rule::in(['parishioner', 'priest', 'secretary', 'ministry_coordinator'])],
         ]);
 
         $user = User::where('email', $data['email'])->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
             return response()->json(['message' => 'Invalid email or password.'], 422);
+        }
+
+        // Check the selected role against the role stored in the database.
+        // It must never be possible to gain privileges by changing a dropdown.
+        if (isset($data['role']) && $user->role !== $data['role']) {
+            return response()->json(['message' => 'Selected account role does not match this user.'], 422);
         }
 
         if ($user->status !== 'active') {

@@ -17,13 +17,17 @@ import {
 } from 'lucide-react';
 
 import api from '../services/api';
+import { roleLabel } from '../constants/roles';
 
 export default function Layout() {
     const navigate = useNavigate();
 
-    const user = JSON.parse(
-        localStorage.getItem('user') || '{}'
-    );
+    let user = {};
+    try {
+        user = JSON.parse(localStorage.getItem('user') || '{}');
+    } catch {
+        user = {};
+    }
 
     const logout = async () => {
         try {
@@ -49,7 +53,7 @@ export default function Layout() {
                 <small>
                     {user.name}
                     <br />
-                    {user.role}
+                    {roleLabel(user.role)}
                 </small>
 
                 <nav>

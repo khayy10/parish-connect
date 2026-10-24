@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-// Production always uses the same-origin Vercel /api proxy, avoiding CORS
-// and stale frontend build-time environment variables.
-// Local development uses the Vite /api proxy; VITE_API_URL is a dev override.
-const baseURL = import.meta.env.PROD
-    ? '/api'
-    : (import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '');
+// Default: Vercel same-origin /api rewrite (and Vite proxy locally).
+// Optional override: Set VITE_API_URL to the full real Render API URL
+// e.g. https://YOUR-RENDER-SERVICE.onrender.com/api if Vercel rewrites fail.
+// Do not use https://api.example.com (placeholder); no trailing slash needed.
+const configuredURL = (import.meta.env.VITE_API_URL || '').trim();
+const baseURL = configuredURL ? configuredURL.replace(/\/+$/, '') : '/api';
 
 const api = axios.create({
     baseURL,
@@ -42,6 +42,7 @@ export function getApiErrorMessage(error, fallback = 'Request failed. Please try
     if (apiMessage && error.response.status < 500) return apiMessage;
 
     const status = error.response?.status;
+    if (status === 404) return 'API endpoint not found (404). Verify the Vercel Root Directory, /api rewrites, and Render backend URL.';
     if (status === 429) return 'Too many attempts. Please wait a minute and try again.';
     if (status === 502 || status === 503 || status === 504) {
         return 'The backend or database is unavailable. Please check /api/health and the Render deployment.';
