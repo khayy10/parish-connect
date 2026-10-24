@@ -490,3 +490,77 @@ td { font-size: 13px; overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* DOCUMENT REQUESTS / BRAND — Evergreen & Gold enhancements */
+.brand span { display: flex; flex-direction: column; min-width: 0; line-height: 1.1; }
+.brand span small { margin-top: 6px; font-size: 8px; font-weight: 750; letter-spacing: 1.65px; color: #d2b779; }
+.auth-brand { display: flex; align-items: center; gap: 11px; margin-bottom: 22px; }
+.auth-brand > svg { width: 45px; height: 45px; padding: 10px; color: #e6c17a; border-radius: 13px; background: #143d33; }
+.auth-brand > div { display: grid; gap: 1px; }
+.auth-brand strong { font-size: 20px; color: #153d30; letter-spacing: -.6px; }
+.auth-brand span { font-size: 9px; font-weight: 800; letter-spacing: 1.5px; color: #9a793a; }
+.documents-heading h1 { display: inline-flex !important; align-items: center; gap: 13px; }
+.documents-heading h1 > svg { width: 29px; height: 29px; color: var(--pc-green-700); stroke-width: 1.8; }
+.document-overview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 20px; }
+.document-overview-card { display: flex; align-items: center; gap: 16px; border: 1px solid var(--pc-line); border-radius: 15px; background: #fff; padding: 19px; box-shadow: var(--pc-shadow); }
+.document-overview-card > svg { width: 43px; height: 43px; padding: 11px; border-radius: 12px; flex-shrink: 0; color: #28694c; background: var(--pc-green-100); }
+.document-overview-card div { display: grid; gap: 1px; }
+.document-overview-card strong { font-size: 28px; line-height: 1.2; color: #174a36; }
+.document-overview-card span { font-size: 12px; color: var(--pc-muted); }
+.section-heading, .document-list-heading { display: flex; gap: 16px; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+.section-heading h2, .document-list-heading h2 { margin: 0 0 3px; color: #1b4533; font-size: 20px; }
+.section-heading p, .document-list-heading p { margin: 0; color: var(--pc-muted); font-size: 13px; }
+.section-icon { display: grid; place-items: center; width: 45px; height: 45px; border-radius: 14px; color: #bd914b; background: var(--pc-gold-soft); }
+.section-icon svg { width: 23px; height: 23px; }
+.document-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; }
+.document-fields label { margin: 0; font-size: 12px; }
+.document-fields-wide { grid-column: 1 / -1; }
+.document-fields textarea { min-height: 85px; }
+.document-form-bottom { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-top: 16px; }
+.document-form-bottom p { display: flex; align-items: flex-start; gap: 8px; max-width: 620px; margin: 0; color: #62766a; font-size: 12px; }
+.document-form-bottom p svg { width: 17px; height: 17px; flex: 0 0 auto; color: #347653; }
+.document-form-bottom button { flex: 0 0 auto; }
+.document-form-bottom button svg { width: 16px; height: 16px; }
+.document-list-heading label { min-width: 175px; margin: 0; font-size: 12px; }
+.document-list-heading select { margin-top: 5px; }
+.document-request-list { display: grid; gap: 15px; }
+.document-request-item { padding: 18px; border: 1px solid #e4ebe5; border-radius: 14px; background: #fdfffc; }
+.document-request-item-top { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+.document-request-item h3 { margin: 4px 0 2px; color: #214532; font-size: 17px; }
+.document-request-item-top p { margin: 0; font-size: 13px; }
+.document-request-number { color: #899989; font-size: 10px; font-weight: 850; letter-spacing: 1.1px; }
+.document-request-meta { display: flex; flex-wrap: wrap; gap: 9px 23px; padding: 14px 0; margin-top: 11px; border-top: 1px solid var(--pc-line); font-size: 12px; color: #66786e; }
+.document-request-meta b { color: #3c5d49; }
+.document-office-note { padding: 12px; margin: 0 !important; background: #eff6ee; border-radius: 10px; color: #295d43 !important; font-size: 13px; }
+.document-review { display: grid; grid-template-columns: minmax(150px, 200px) minmax(0, 1fr) auto; gap: 13px; align-items: end; padding-top: 14px; border-top: 1px solid var(--pc-line); }
+.document-review label { margin: 0; font-size: 12px; }
+.document-review textarea { min-height: 44px; }
+.document-review button { margin-bottom: 2px; }
+.document-status { font-size: 11px; }
+.document-status.in_review { color: #365988; background: #ecf4ff; border-color: #d1e3fb; }
+.document-status.ready_for_pickup { color: #16734f; background: #e5f7ee; border-color: #c5e8d5; }
+.document-status.released { color: #176241; background: #e4f4ea; border-color: #c6e8d0; }
+.document-empty { padding: 46px 12px; text-align: center; color: var(--pc-muted); }
+.document-empty svg { display: block; margin: 0 auto 12px; width: 43px; height: 43px; color: #9cbaaa; }
+.document-empty strong { display: block; color: #335542; font-size: 16px; }
+.document-empty p { margin: 6px auto 0; }
+@media (max-width: 980px) {
+  .document-overview { gap: 9px; }
+  .document-overview-card { gap: 9px; padding: 12px; }
+  .document-review { grid-template-columns: 1fr 1fr; }
+  .document-review button { grid-column: 1 / -1; }
+}
+@media (max-width: 660px) {
+  .document-overview { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .document-overview-card { flex-direction: column; align-items: flex-start; gap: 7px; }
+  .document-overview-card strong { font-size: 23px; }
+  .document-overview-card > svg { width: 35px; height: 35px; padding: 8px; }
+  .document-overview-card span { font-size: 10px; }
+  .document-fields { grid-template-columns: minmax(0, 1fr); }
+  .document-fields-wide { grid-column: auto; }
+  .document-form-bottom { align-items: stretch; flex-direction: column; }
+  .document-list-heading { align-items: stretch; flex-direction: column; }
+  .document-list-heading label { min-width: 0; }
+  .document-review { grid-template-columns: minmax(0, 1fr); }
+  .document-review button { grid-column: auto; }
+}

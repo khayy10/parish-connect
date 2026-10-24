@@ -19,6 +19,7 @@ import Reservations from './pages/Reservations';
 import Ministries from './pages/Ministries';
 import Announcements from './pages/Announcements';
 import Parishioners from './pages/Parishioners';
+import DocumentRequests from './pages/DocumentRequests';
 
 function Protected({ children }) {
     const [state, setState] = useState('checking');
@@ -107,6 +108,11 @@ export default function App() {
                 <Route
                     path="announcements"
                     element={<Announcements />}
+                />
+
+                <Route
+                    path="document-requests"
+                    element={<DocumentRequests />}
                 />
 
                 <Route

@@ -10,6 +10,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\MinistryController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DocumentRequestController;
 
 // PUBLIC ROUTES
 // Use /api/health to check both Laravel and its live database connection.
@@ -47,6 +48,16 @@ Route::middleware('auth:sanctum')->group(function () {
         '/dashboard',
         [DashboardController::class, 'index']
     );
+
+    // CHURCH DOCUMENT REQUESTS
+    // Parishioners can request records and see only their own requests.
+    // Only Parish Priest / Parish Secretary can review and change status.
+    Route::get('/document-requests', [DocumentRequestController::class, 'index'])
+        ->middleware('role:parishioner,priest,secretary');
+    Route::post('/document-requests', [DocumentRequestController::class, 'store'])
+        ->middleware(['role:parishioner', 'throttle:10,1']);
+    Route::patch('/document-requests/{documentRequest}', [DocumentRequestController::class, 'update'])
+        ->middleware('role:priest,secretary');
 
     // APPOINTMENTS
 

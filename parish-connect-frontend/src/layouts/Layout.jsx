@@ -13,7 +13,8 @@ import {
     Users,
     Newspaper,
     LogOut,
-    UserPlus
+    UserPlus,
+    FileText
 } from 'lucide-react';
 
 import api from '../services/api';
@@ -47,7 +48,7 @@ export default function Layout() {
             <aside>
                 <div className="brand">
                     <Church />
-                    ParishConnect
+                    <span>ParishConnect<small>PARISH SERVICES PORTAL</small></span>
                 </div>
 
                 <small>
@@ -71,6 +72,13 @@ export default function Layout() {
                         <Building2 />
                         Reservations
                     </NavLink>
+
+                    {['parishioner', 'priest', 'secretary'].includes(user.role) && (
+                        <NavLink to="/document-requests">
+                            <FileText />
+                            {user.role === 'parishioner' ? 'Request Documents' : 'Document Requests'}
+                        </NavLink>
+                    )}
 
                     <NavLink to="/ministries">
                         <Users />

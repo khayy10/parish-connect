@@ -1,3 +1,4 @@
+import { Church } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import api, { getApiErrorMessage } from '../services/api';
@@ -42,6 +43,7 @@ export default function Login() {
 
     return <div className="auth">
         <form className="card" onSubmit={login}>
+            <div className="auth-brand"><Church aria-hidden="true" /><div><strong>ParishConnect</strong><span>PARISH SERVICES PORTAL</span></div></div>
             <h1>ParishConnect Sign In</h1>
             <p className="auth-intro">Welcome back! Select your account role to continue.</p>
             <ApiStatus />

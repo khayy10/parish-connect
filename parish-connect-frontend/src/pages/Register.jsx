@@ -1,3 +1,4 @@
+import { Church } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api, { getApiErrorMessage } from '../services/api';
@@ -61,6 +62,7 @@ export default function Register() {
 
     return <div className="auth">
         <form className="card" onSubmit={handleSubmit}>
+            <div className="auth-brand"><Church aria-hidden="true" /><div><strong>ParishConnect</strong><span>PARISH SERVICES PORTAL</span></div></div>
             <h1>Create Your Account</h1>
             <p className="auth-intro">Join the ParishConnect community.</p>
             <ApiStatus />
